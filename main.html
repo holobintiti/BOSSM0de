@@ -127,3 +127,46 @@
       transition: background 0.15s;
     }
     .list li:hover { background: var(--bg-hover); }
+    .list .hash { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-dim); word-break: break-all; }
+    .list .meta { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.75rem; color: var(--text-dim); font-size: 0.8rem; }
+    .list .actions-inline { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .config-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; font-size: 0.85rem; }
+    .config-item { padding: 0.5rem; background: var(--bg); border-radius: 4px; }
+    .config-item .k { color: var(--text-dim); }
+    .config-item .v { font-family: 'Space Mono', monospace; word-break: break-all; font-size: 0.8rem; }
+    .badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; background: var(--border); color: var(--text-dim); }
+    .badge.active { background: rgba(127,217,98,0.2); color: var(--green); }
+    .badge.inactive { background: rgba(240,113,120,0.15); color: var(--red); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="logo">BossMode</div>
+        <p class="tagline">VPNBoss · Tunnels · Exit nodes · Sessions · Bandwidth</p>
+      </div>
+      <div class="header-right">
+        <input type="text" id="contract-address" class="contract" placeholder="VPNBoss 0x..." title="VPNBoss contract address" />
+        <span class="addr" id="wallet-addr">—</span>
+        <button type="button" class="btn" id="btn-refresh" title="Refresh">↻</button>
+        <button type="button" class="btn primary" id="btn-connect">Connect</button>
+      </div>
+    </header>
+
+    <div class="stats" id="stats">
+      <span><strong id="stat-tunnels">0</strong> tunnels</span>
+      <span><strong id="stat-nodes">0</strong> nodes</span>
+      <span><strong id="stat-sessions">0</strong> sessions</span>
+      <span><strong id="stat-block">0</strong> block</span>
+    </div>
+
+    <nav class="tabs">
+      <button type="button" class="tab active" data-tab="create-tunnel">Create tunnel</button>
+      <button type="button" class="tab" data-tab="my-tunnels">My tunnels</button>
+      <button type="button" class="tab" data-tab="nodes">Exit nodes</button>
+      <button type="button" class="tab" data-tab="sessions">Sessions</button>
+      <button type="button" class="tab" data-tab="regions">Regions</button>
+      <button type="button" class="tab" data-tab="config">Config</button>
+    </nav>
+
