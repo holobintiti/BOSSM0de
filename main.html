@@ -385,3 +385,46 @@
       }
 
       async function refresh() {
+        const addr = getContractAddr();
+        if (addr && !contract) attachContract(addr);
+        if (!contract) return;
+        try {
+          const [totalTunnels, totalNodes, totalSessions,,, sessionLen] = await contract.getGlobalStats();
+          document.getElementById('stat-tunnels').textContent = totalTunnels.toString();
+          document.getElementById('stat-nodes').textContent = totalNodes.toString();
+          document.getElementById('stat-sessions').textContent = totalSessions.toString();
+          const blockNum = await contract.currentBlockNumber();
+          document.getElementById('stat-block').textContent = blockNum.toString();
+        } catch (e) {
+          console.error(e);
+        }
+        const tab = document.querySelector('.tab.active');
+        if (tab) {
+          const tabName = tab.getAttribute('data-tab');
+          if (tabName === 'my-tunnels') loadMyTunnels();
+          else if (tabName === 'nodes') loadNodes();
+          else if (tabName === 'sessions') loadSessions();
+          else if (tabName === 'regions') loadRegions();
+          else if (tabName === 'config') loadConfig();
+        }
+      }
+
+      async function loadMyTunnels() {
+        const listEl = document.getElementById('my-tunnels-list');
+        if (!listEl) return;
+        if (!userAddress || !contract) {
+          listEl.innerHTML = '<li class="text-dim">Connect wallet and set contract.</li>';
+          return;
+        }
+        try {
+          const [tunnelIds, expiresAtBlocks, bandwidthCreditsWei, active] = await contract.getSubscriberTunnelsSummary(userAddress);
+          if (tunnelIds.length === 0) {
+            listEl.innerHTML = '<li class="text-dim">No tunnels.</li>';
+            return;
+          }
+          listEl.innerHTML = tunnelIds.map((id, i) => {
+            const act = active[i];
+            return '<li><span class="badge ' + (act ? 'active' : 'inactive') + '">Tunnel #' + id + '</span> ' +
+              'expires ' + expiresAtBlocks[i] + ' · credits ' + ethers.formatEther(bandwidthCreditsWei[i]) + ' ETH' +
+              '<div class="meta">ID: ' + id + '</div>' +
+              '<div class="actions-inline"><button type="button" class="btn small select-tunnel" data-id="' + id + '">Detail</button></div></li>';
