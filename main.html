@@ -471,3 +471,46 @@
         if (!listEl || !contract) return;
         try {
           const ids = await contract.getAllNodeIds();
+          if (ids.length === 0) {
+            listEl.innerHTML = '<li class="text-dim">No nodes.</li>';
+            return;
+          }
+          const max = Math.min(ids.length, 30);
+          listEl.innerHTML = '';
+          for (let i = 0; i < max; i++) {
+            const nid = ids[i];
+            const [operator, endpointHash, regionId, registeredAtBlock, active] = await contract.getExitNode(nid);
+            const li = document.createElement('li');
+            li.innerHTML = '<span class="badge ' + (active ? 'active' : 'inactive') + '">Node #' + nid + '</span> ' +
+              'region ' + regionId + ' · ' + (active ? 'active' : 'inactive') +
+              '<div class="meta">Operator: ' + operator + '</div>' +
+              '<div class="hash">' + endpointHash + '</div>';
+            listEl.appendChild(li);
+          }
+          if (ids.length > max) listEl.innerHTML += '<li class="text-dim">… and ' + (ids.length - max) + ' more</li>';
+        } catch (e) {
+          listEl.innerHTML = '<li class="text-dim">Error: ' + (e.message || e) + '</li>';
+        }
+      }
+
+      async function loadSessions() {
+        const listEl = document.getElementById('sessions-list');
+        if (!listEl || !contract) return;
+        try {
+          const ids = await contract.getSessionIdsPaginated(sessionsOffset, PAGE_SIZE);
+          if (ids.length === 0) {
+            listEl.innerHTML = '<li class="text-dim">No sessions in this range.</li>';
+          } else {
+            listEl.innerHTML = '';
+            for (const sid of ids) {
+              const [tunnelId, nodeId, openedAtBlock, bandwidthCreditsUsed, totalBytesLogged, closed] = await contract.getSession(sid);
+              const li = document.createElement('li');
+              li.innerHTML = 'Session #' + sid + ' · tunnel ' + tunnelId + ' · node ' + nodeId +
+                ' · ' + (closed ? 'closed' : 'open') + ' · bytes ' + totalBytesLogged.toString();
+              listEl.appendChild(li);
+            }
+          }
+          const total = (await contract.getGlobalStats())[2];
+          document.getElementById('sessions-page-info').textContent =
+            'Offset ' + sessionsOffset + ' · total ' + total.toString();
+        } catch (e) {
