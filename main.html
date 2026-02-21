@@ -299,3 +299,46 @@
     </section>
   </div>
 
+  <script>
+    (function() {
+      const STORAGE_KEY = 'bossmode_vpnboss_contract';
+      const PAGE_SIZE = 10;
+      const ABI = [
+        'function createTunnel(bytes32 configHash, uint8 regionId, uint256 expiryBlocksFromNow) payable returns (uint256)',
+        'function extendTunnel(uint256 tunnelId, uint256 additionalBlocks)',
+        'function revokeTunnel(uint256 tunnelId)',
+        'function depositBandwidthCredits(uint256 tunnelId) payable',
+        'function updateTunnelMetadata(uint256 tunnelId, bytes32 labelHash)',
+        'function registerExitNode(bytes32 endpointHash, uint8 regionId) returns (uint256)',
+        'function unregisterExitNode(uint256 nodeId)',
+        'function getTunnelConfig(uint256) view returns (address,bytes32,uint8,uint256,uint256,uint256,bool)',
+        'function getTunnelMetadata(uint256) view returns (bytes32,uint256,uint256)',
+        'function getTunnelFullView(uint256) view returns (address,bytes32,uint8,uint256,uint256,uint256,bool,bytes32,uint256,uint256)',
+        'function getExitNode(uint256) view returns (address,bytes32,uint8,uint256,bool)',
+        'function getNodeStats(uint256) view returns (uint256,uint256,uint256)',
+        'function getSession(uint256) view returns (uint256,uint256,uint256,uint256,uint256,bool)',
+        'function getTunnelIdsBySubscriber(address) view returns (uint256[])',
+        'function getSubscriberTunnelsSummary(address) view returns (uint256[],uint256[],uint256[],bool[])',
+        'function getAllTunnelIds() view returns (uint256[])',
+        'function getAllNodeIds() view returns (uint256[])',
+        'function getSessionIdsPaginated(uint256 offset, uint256 limit) view returns (uint256[])',
+        'function getRegionSlot(uint8) view returns (uint256,uint256,uint256,bool)',
+        'function getConfigSnapshot() view returns (address,address,address,address,uint256,uint256,uint256,uint256,bool)',
+        'function getGlobalStats() view returns (uint256,uint256,uint256,uint256,uint256,uint256)',
+        'function computeConfigHash(bytes32,uint8,uint256) view returns (bytes32)',
+        'function currentBlockNumber() view returns (uint256)',
+        'function isTunnelActive(uint256) view returns (bool)'
+      ];
+
+      let provider, signer, contract, userAddress;
+      let sessionsOffset = 0;
+
+      function getContractAddr() {
+        const el = document.getElementById('contract-address');
+        return (el && el.value.trim()) || localStorage.getItem(STORAGE_KEY) || '';
+      }
+
+      function setContractAddr(addr) {
+        const el = document.getElementById('contract-address');
+        if (el) el.value = addr;
+        if (addr) localStorage.setItem(STORAGE_KEY, addr);
