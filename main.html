@@ -643,3 +643,46 @@
         const labelHash = ethers.isHexString(label, 32) ? label : (label ? ethers.keccak256(ethers.toUtf8Bytes(label)) : ethers.ZeroHash);
         hideMsg('tunnel-action-msg');
         try {
+          const tx = await contract.updateTunnelMetadata(tid, labelHash);
+          await tx.wait();
+          showMsg('tunnel-action-msg', 'Label updated.', 'ok');
+          selectTunnel(tid);
+        } catch (e) {
+          showMsg('tunnel-action-msg', (e.message || e).toString(), 'err');
+        }
+      });
+
+      document.getElementById('btn-revoke').addEventListener('click', async function() {
+        const tid = document.getElementById('tunnel-detail-card').dataset.tunnelId;
+        if (!tid || !contract || !confirm('Revoke this tunnel? Remaining credits will be refunded.')) return;
+        hideMsg('tunnel-action-msg');
+        try {
+          const tx = await contract.revokeTunnel(tid);
+          await tx.wait();
+          showMsg('tunnel-action-msg', 'Tunnel revoked.', 'ok');
+          document.getElementById('tunnel-detail-card').style.display = 'none';
+          refresh();
+          loadMyTunnels();
+        } catch (e) {
+          showMsg('tunnel-action-msg', (e.message || e).toString(), 'err');
+        }
+      });
+
+      document.getElementById('btn-register-node').addEventListener('click', async function() {
+        const endpoint = document.getElementById('node-endpoint-hash').value.trim();
+        const region = parseInt(document.getElementById('node-region').value, 10) || 0;
+        if (!endpoint || !ethers.isHexString(endpoint, 32)) {
+          showMsg('register-node-msg', 'Invalid endpoint hash (32-byte hex).', 'err');
+          return;
+        }
+        if (!contract) { showMsg('register-node-msg', 'Connect and set contract.', 'err'); return; }
+        hideMsg('register-node-msg');
+        try {
+          const tx = await contract.registerExitNode(endpoint, region);
+          showMsg('register-node-msg', 'Tx: ' + tx.hash, 'ok');
+          await tx.wait();
+          showMsg('register-node-msg', 'Node registered.', 'ok');
+          refresh();
+          loadNodes();
+        } catch (e) {
+          showMsg('register-node-msg', (e.message || e).toString(), 'err');
