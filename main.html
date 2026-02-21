@@ -342,3 +342,46 @@
         const el = document.getElementById('contract-address');
         if (el) el.value = addr;
         if (addr) localStorage.setItem(STORAGE_KEY, addr);
+      }
+
+      function showMsg(id, text, type) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = text;
+        el.className = 'msg ' + (type || 'info');
+        el.style.display = 'block';
+      }
+
+      function hideMsg(id) {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      }
+
+      async function connect() {
+        if (typeof window.ethereum === 'undefined') {
+          alert('MetaMask or another Web3 wallet is required.');
+          return;
+        }
+        try {
+          provider = new ethers.BrowserProvider(window.ethereum);
+          const accounts = await provider.send('eth_requestAccounts', []);
+          if (!accounts.length) return;
+          signer = await provider.getSigner();
+          userAddress = accounts[0];
+          document.getElementById('wallet-addr').textContent = userAddress.slice(0, 6) + '…' + userAddress.slice(-4);
+          const addr = getContractAddr();
+          if (addr) attachContract(addr);
+          await refresh();
+        } catch (e) {
+          console.error(e);
+          alert('Connection failed: ' + (e.message || e));
+        }
+      }
+
+      function attachContract(addr) {
+        if (!provider || !addr) return;
+        contract = new ethers.Contract(addr, ABI, signer || provider);
+        setContractAddr(addr);
+      }
+
+      async function refresh() {
