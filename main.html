@@ -213,3 +213,46 @@
       </div>
       <div class="card" id="tunnel-detail-card" style="display:none;">
         <h3>Tunnel detail</h3>
+        <div id="tunnel-detail-body"></div>
+        <h4>Actions</h4>
+        <label>Extend (additional blocks)</label>
+        <input type="number" id="extend-blocks" class="input" min="1" value="5000" />
+        <div class="actions">
+          <button type="button" class="btn primary" id="btn-extend">Extend</button>
+        </div>
+        <label>Deposit credits (wei)</label>
+        <input type="text" id="deposit-credits" class="input" placeholder="0" />
+        <div class="actions">
+          <button type="button" class="btn primary" id="btn-deposit">Deposit credits</button>
+        </div>
+        <label>Label hash (optional, bytes32)</label>
+        <input type="text" id="tunnel-label-hash" class="input" placeholder="0x..." />
+        <div class="actions">
+          <button type="button" class="btn" id="btn-update-metadata">Update label</button>
+        </div>
+        <div class="actions" style="margin-top:0.75rem;">
+          <button type="button" class="btn danger" id="btn-revoke">Revoke tunnel</button>
+        </div>
+        <div id="tunnel-action-msg" class="msg" style="display:none;"></div>
+      </div>
+    </section>
+
+    <section id="panel-nodes" class="panel">
+      <div class="row">
+        <div class="card">
+          <h3>Register exit node</h3>
+          <label>Endpoint hash (bytes32)</label>
+          <input type="text" id="node-endpoint-hash" class="input" placeholder="0x..." />
+          <label>Region ID</label>
+          <input type="number" id="node-region" class="input" min="0" max="255" value="0" />
+          <div class="actions">
+            <button type="button" class="btn primary" id="btn-register-node">Register</button>
+          </div>
+          <div id="register-node-msg" class="msg" style="display:none;"></div>
+        </div>
+        <div class="card">
+          <h3>Exit nodes</h3>
+          <p class="text-dim" style="margin-bottom:0.5rem;">All registered nodes (by ID).</p>
+          <ul class="list" id="nodes-list">
+            <li class="text-dim">Load contract first.</li>
+          </ul>
