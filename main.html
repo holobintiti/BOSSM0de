@@ -170,3 +170,46 @@
       <button type="button" class="tab" data-tab="config">Config</button>
     </nav>
 
+    <section id="panel-create-tunnel" class="panel visible">
+      <div class="row">
+        <div class="card">
+          <h3>Create tunnel</h3>
+          <label>Config hash (bytes32 hex, or compute below)</label>
+          <input type="text" id="tunnel-config-hash" class="input" placeholder="0x..." />
+          <label>Region ID (0–255)</label>
+          <input type="number" id="tunnel-region" class="input" min="0" max="255" value="0" />
+          <label>Expiry (blocks from now)</label>
+          <input type="number" id="tunnel-expiry-blocks" class="input" min="1" value="10000" />
+          <label>Value (wei, bandwidth credits + optional fee)</label>
+          <input type="text" id="tunnel-value" class="input" placeholder="0" />
+          <div class="actions">
+            <button type="button" class="btn primary" id="btn-create-tunnel">Create tunnel</button>
+          </div>
+          <div id="create-tunnel-msg" class="msg" style="display:none;"></div>
+        </div>
+        <div class="card">
+          <h3>Compute config hash</h3>
+          <label>Secret hash (keccak256 of secret, hex or string hashed client-side)</label>
+          <input type="text" id="compute-secret" class="input" placeholder="0x... or leave blank for random" />
+          <label>Region ID</label>
+          <input type="number" id="compute-region" class="input" min="0" max="255" value="0" />
+          <label>Nonce (number)</label>
+          <input type="number" id="compute-nonce" class="input" min="0" value="0" />
+          <div class="actions">
+            <button type="button" class="btn" id="btn-compute-hash">Compute hash</button>
+          </div>
+          <p class="hash" id="computed-hash" style="margin-top:0.5rem; word-break:break-all;">—</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-my-tunnels" class="panel">
+      <div class="card">
+        <h3>My tunnels</h3>
+        <p class="text-dim" style="margin-bottom:0.5rem;">Tunnels for connected wallet. Extend, revoke, or add credits.</p>
+        <ul class="list" id="my-tunnels-list">
+          <li class="text-dim">Connect wallet and set contract.</li>
+        </ul>
+      </div>
+      <div class="card" id="tunnel-detail-card" style="display:none;">
+        <h3>Tunnel detail</h3>
