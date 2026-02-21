@@ -84,3 +84,46 @@
     .stats strong { color: var(--accent); margin-right: 0.25rem; font-family: 'Space Mono', monospace; }
     .tabs { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 1rem; }
     .tab { padding: 0.5rem 1rem; background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; border-radius: 6px; font-size: 0.9rem; }
+    .tab:hover { color: var(--text); }
+    .tab.active { border-color: var(--accent); color: var(--accent); }
+    .panel { display: none; }
+    .panel.visible { display: block; }
+    .card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .card h3 { font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent); font-family: 'Space Mono', monospace; }
+    .card h4 { font-size: 0.9rem; margin: 0.75rem 0 0.5rem; color: var(--text-dim); }
+    label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0.25rem; }
+    .input, textarea, select {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+    textarea { min-height: 80px; resize: vertical; }
+    .row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .row .card { flex: 1; min-width: 280px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+    .msg { padding: 0.5rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.85rem; }
+    .msg.ok { background: rgba(127,217,98,0.12); border: 1px solid var(--green); color: var(--green); }
+    .msg.err { background: rgba(240,113,120,0.12); border: 1px solid var(--red); color: var(--red); }
+    .msg.info { background: var(--glow); border: 1px solid var(--accent); color: var(--accent); }
+    .list { list-style: none; }
+    .list li {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      transition: background 0.15s;
+    }
+    .list li:hover { background: var(--bg-hover); }
