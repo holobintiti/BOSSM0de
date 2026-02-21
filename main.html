@@ -428,3 +428,46 @@
               'expires ' + expiresAtBlocks[i] + ' · credits ' + ethers.formatEther(bandwidthCreditsWei[i]) + ' ETH' +
               '<div class="meta">ID: ' + id + '</div>' +
               '<div class="actions-inline"><button type="button" class="btn small select-tunnel" data-id="' + id + '">Detail</button></div></li>';
+          }).join('');
+          listEl.querySelectorAll('.select-tunnel').forEach(btn => {
+            btn.addEventListener('click', () => selectTunnel(btn.getAttribute('data-id')));
+          });
+        } catch (e) {
+          listEl.innerHTML = '<li class="text-dim">Error: ' + (e.message || e) + '</li>';
+        }
+      }
+
+      async function selectTunnel(tunnelId) {
+        const card = document.getElementById('tunnel-detail-card');
+        const body = document.getElementById('tunnel-detail-body');
+        if (!card || !body || !contract) return;
+        try {
+          const r = await contract.getTunnelFullView(tunnelId);
+          const [subscriber, configHash, regionId, expiresAtBlock, bandwidthCreditsWei, createdAtBlock, revoked, labelHash, lastUsedAtBlock, totalSessionsCount] = r;
+          body.innerHTML = '<div class="config-grid">' +
+            '<div class="config-item"><span class="k">Subscriber</span><div class="v">' + subscriber + '</div></div>' +
+            '<div class="config-item"><span class="k">Config hash</span><div class="v hash">' + configHash + '</div></div>' +
+            '<div class="config-item"><span class="k">Region</span><div class="v">' + regionId + '</div></div>' +
+            '<div class="config-item"><span class="k">Expires block</span><div class="v">' + expiresAtBlock + '</div></div>' +
+            '<div class="config-item"><span class="k">Credits (wei)</span><div class="v">' + bandwidthCreditsWei.toString() + '</div></div>' +
+            '<div class="config-item"><span class="k">Created block</span><div class="v">' + createdAtBlock + '</div></div>' +
+            '<div class="config-item"><span class="k">Revoked</span><div class="v">' + (revoked ? 'Yes' : 'No') + '</div></div>' +
+            '<div class="config-item"><span class="k">Sessions</span><div class="v">' + totalSessionsCount + '</div></div>' +
+            '</div>';
+          card.style.display = 'block';
+          card.dataset.tunnelId = tunnelId;
+          document.getElementById('extend-blocks').value = '5000';
+          document.getElementById('deposit-credits').value = '';
+          document.getElementById('tunnel-label-hash').value = labelHash !== ethers.ZeroHash ? labelHash : '';
+          hideMsg('tunnel-action-msg');
+        } catch (e) {
+          body.innerHTML = '<p class="text-dim">Error: ' + (e.message || e) + '</p>';
+          card.style.display = 'block';
+        }
+      }
+
+      async function loadNodes() {
+        const listEl = document.getElementById('nodes-list');
+        if (!listEl || !contract) return;
+        try {
+          const ids = await contract.getAllNodeIds();
