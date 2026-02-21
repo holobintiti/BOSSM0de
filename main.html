@@ -686,3 +686,33 @@
           loadNodes();
         } catch (e) {
           showMsg('register-node-msg', (e.message || e).toString(), 'err');
+        }
+      });
+
+      document.getElementById('btn-sessions-prev').addEventListener('click', function() {
+        sessionsOffset = Math.max(0, sessionsOffset - PAGE_SIZE);
+        loadSessions();
+      });
+      document.getElementById('btn-sessions-next').addEventListener('click', function() {
+        sessionsOffset += PAGE_SIZE;
+        loadSessions();
+      });
+
+      document.querySelectorAll('.tab').forEach(t => {
+        t.addEventListener('click', function() {
+          document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+          document.querySelectorAll('.panel').forEach(x => x.classList.remove('visible'));
+          this.classList.add('active');
+          const id = 'panel-' + this.getAttribute('data-tab');
+          const panel = document.getElementById(id);
+          if (panel) panel.classList.add('visible');
+          refresh();
+        });
+      });
+
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) document.getElementById('contract-address').value = saved;
+    })();
+  </script>
+</body>
+</html>
