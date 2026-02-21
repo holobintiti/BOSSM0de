@@ -557,3 +557,46 @@
       });
 
       document.getElementById('btn-compute-hash').addEventListener('click', async function() {
+        const secret = document.getElementById('compute-secret').value.trim();
+        const region = parseInt(document.getElementById('compute-region').value, 10) || 0;
+        const nonce = document.getElementById('compute-nonce').value.trim() || '0';
+        let secretHash = ethers.ZeroHash;
+        if (secret) {
+          if (ethers.isHexString(secret, 32)) secretHash = secret;
+          else secretHash = ethers.keccak256(ethers.toUtf8Bytes(secret));
+        } else {
+          secretHash = ethers.keccak256(ethers.toBeBytes(Date.now()));
+        }
+        const addr = getContractAddr();
+        if (!addr) {
+          document.getElementById('computed-hash').textContent = 'Set contract to use computeConfigHash, or use: keccak256(abi.encodePacked(secretHash, regionId, nonce, VBN_TUNNEL_SEED))';
+          return;
+        }
+        if (!contract) attachContract(addr);
+        try {
+          const hash = await contract.computeConfigHash(secretHash, region, BigInt(nonce));
+          document.getElementById('computed-hash').textContent = hash;
+          document.getElementById('tunnel-config-hash').value = hash;
+        } catch (e) {
+          document.getElementById('computed-hash').textContent = 'Error: ' + (e.message || e);
+        }
+      });
+
+      document.getElementById('btn-create-tunnel').addEventListener('click', async function() {
+        const configHash = document.getElementById('tunnel-config-hash').value.trim();
+        const region = parseInt(document.getElementById('tunnel-region').value, 10) || 0;
+        const expiry = document.getElementById('tunnel-expiry-blocks').value.trim() || '10000';
+        const value = document.getElementById('tunnel-value').value.trim() || '0';
+        if (!configHash || !ethers.isHexString(configHash, 32)) {
+          showMsg('create-tunnel-msg', 'Invalid config hash (32-byte hex).', 'err');
+          return;
+        }
+        if (!contract) { showMsg('create-tunnel-msg', 'Connect and set contract.', 'err'); return; }
+        hideMsg('create-tunnel-msg');
+        try {
+          const tx = await contract.createTunnel(configHash, region, BigInt(expiry), { value: BigInt(value) });
+          showMsg('create-tunnel-msg', 'Tx: ' + tx.hash + ' — wait for confirmation.', 'ok');
+          await tx.wait();
+          showMsg('create-tunnel-msg', 'Tunnel created.', 'ok');
+          refresh();
+        } catch (e) {
